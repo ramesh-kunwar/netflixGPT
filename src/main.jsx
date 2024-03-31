@@ -6,6 +6,8 @@ import { RouterProvider } from "react-router-dom";
 import Login from "./components/Login.jsx";
 import Browse from "./components/Browse.jsx";
 import { createBrowserRouter } from "react-router-dom";
+import { Provider } from "react-redux";
+import appStore from "./store/appStore.js";
 
 const appRouter = createBrowserRouter([
   {
@@ -17,10 +19,13 @@ const appRouter = createBrowserRouter([
     element: <Browse />,
   },
 ]);
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <RouterProvider router={appRouter}>
-      <App />
-    </RouterProvider>
+    <Provider store={appStore}>
+      <RouterProvider router={appRouter}>
+        <App />
+      </RouterProvider>
+    </Provider>
   </React.StrictMode>
 );

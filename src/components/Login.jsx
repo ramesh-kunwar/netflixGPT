@@ -1,57 +1,66 @@
 import { useState, useRef } from "react";
 import Header from "./Header";
-import { BG_IMG } from "../utils/constants";
+import { BG_URL, USER_AVATAR } from "../utils/constants";
 import { checkValidData } from "../utils/validate";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
 import { auth } from "../utils/firebase";
 
-const Login = () => {
-  const [isSignInForm, setIsSignInForm] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(null);
+import { useDispatch } from "react-redux";
+import { addUser } from "../store/userSlice";
 
-  const email = useRef(null);
+const Login = () => {
+  const [isSignInForm, setIsSignInForm] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const dispatch = useDispatch();
+
   const name = useRef(null);
+  const email = useRef(null);
   const password = useRef(null);
 
-  const toggleSignInForm = () => {
-    setIsSignInForm(!isSignInForm);
-  };
-
-  const handleButtonClick = (e) => {
-    e.preventDefault();
-    // validate the form data
-
+  const handleButtonClick = () => {
     const message = checkValidData(email.current.value, password.current.value);
     setErrorMessage(message);
-
     if (message) return;
 
-    // signin / signup
     if (!isSignInForm) {
-      // signup logic
+      // Sign Up Logic
       createUserWithEmailAndPassword(
         auth,
         email.current.value,
         password.current.value
       )
         .then((userCredential) => {
-          // Signed up
           const user = userCredential.user;
-          console.log(user, "user");
-          // ...
+          updateProfile(user, {
+            displayName: name.current.value,
+            photoURL: USER_AVATAR,
+          })
+            .then(() => {
+              const { uid, email, displayName, photoURL } = auth.currentUser;
+              dispatch(
+                addUser({
+                  uid: uid,
+                  email: email,
+                  displayName: displayName,
+                  photoURL: photoURL,
+                })
+              );
+            })
+            .catch((error) => {
+              setErrorMessage(error.message);
+            });
         })
         .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;
-          console.log(errorCode);
-          console.log(errorMessage, "errorMessage");
-          // ..
+          setErrorMessage(errorCode + "-" + errorMessage);
         });
     } else {
-      // signin logic
+      // Sign In Logic
       signInWithEmailAndPassword(
         auth,
         email.current.value,
@@ -60,24 +69,26 @@ const Login = () => {
         .then((userCredential) => {
           // Signed in
           const user = userCredential.user;
-          console.log(user, "user signed in");
+          console.log(user);
         })
         .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;
-          console.log(errorCode);
-          console.log(errorMessage);
+          setErrorMessage(errorCode + "-" + errorMessage);
         });
     }
   };
 
+  const toggleSignInForm = () => {
+    setIsSignInForm(!isSignInForm);
+  };
   return (
     <div>
       <Header />
       <div className="absolute">
         <img
           className="h-screen object-cover w-screen"
-          src={BG_IMG}
+          src={BG_URL}
           alt="logo"
         />
       </div>
