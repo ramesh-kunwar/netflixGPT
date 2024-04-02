@@ -8,7 +8,7 @@ import { addUser, removeUser } from "./store/userSlice";
 const App = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  console.log("hello");
+
   // useEffect(() => {
   //   console.log("hello");
   //   onAuthStateChanged(auth, (user) => {
