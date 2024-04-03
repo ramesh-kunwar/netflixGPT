@@ -8,13 +8,14 @@ import { LOGO, SUPPORTED_LANGUAGES } from "../utils/constants";
 // import { changeLanguage } from "../utils/configSlice";
 import { auth } from "../utils/firebase";
 import { addUser, removeUser } from "../store/userSlice";
+import { toggleGptSearchView } from "../store/gptSlice";
 
 const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((store) => store.user);
-  // const showGptSearch = useSelector((store) => store.gpt.showGptSearch);
-  const showGptSearch = "";
+  const showGptSearch = useSelector((store) => store.gpt.showGptSearch);
+  // const showGptSearch = "";
   const handleSignOut = () => {
     signOut(auth)
       .then(() => {})
@@ -49,7 +50,8 @@ const Header = () => {
 
   const handleGptSearchClick = () => {
     // Toggle GPT Search
-    // dispatch(toggleGptSearchView());
+
+    dispatch(toggleGptSearchView());
   };
 
   const handleLanguageChange = (e) => {
@@ -62,7 +64,7 @@ const Header = () => {
       <img className="w-44 mx-auto md:mx-0" src={LOGO} alt="logo" />
       {user && (
         <div className="flex p-2 justify-between">
-          {showGptSearch && (
+          {/* {showGptSearch && (
             <select
               className="p-2 m-2 bg-gray-900 text-white"
               onChange={handleLanguageChange}
@@ -73,7 +75,7 @@ const Header = () => {
                 </option>
               ))}
             </select>
-          )}
+          )} */}
           <button
             className="py-2 px-4 mx-4 my-2 bg-purple-800 text-white rounded-lg"
             onClick={handleGptSearchClick}
